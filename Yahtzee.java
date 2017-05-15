@@ -216,10 +216,28 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	/* Update both the scoreboard, and the nearly identical categories
 	 * array. The categories array will have a 0 in a spot if the category
 	 * hasn't been chosen, and a 1 if it has been chosen before */
-	private void updateScoreboardAndCategoryArray(int category, int zeroIndexedPlayerTurn, int score) {
+	private void updateScoreboardAndArrays(int category, int zeroIndexedPlayerTurn, int score) {
 		scoreboard[category][zeroIndexedPlayerTurn] = score;
 		categories[category][zeroIndexedPlayerTurn] = 1;
+		
+		int totalScore = 0;
+		display.updateScorecard(category, zeroIndexedPlayerTurn + 1, score);
+		for (int i = 0; i < scoreboard.length - 1; i++) {
+			System.out.println("Scoreboard at i = " + scoreboard[i][zeroIndexedPlayerTurn]);
+			totalScore += scoreboard[i][zeroIndexedPlayerTurn];
+		}
+		scoreboard[TOTAL][zeroIndexedPlayerTurn] = totalScore;
+		display.updateScorecard(TOTAL, zeroIndexedPlayerTurn + 1, totalScore);
 	}
+	
+//	private void updateScoreboard(int category, int zeroIndexedPlayerTurn, int score) {
+//		int totalScore = 0;
+//		display.updateScorecard(category, zeroIndexedPlayerTurn + 1, score);
+//		for (int i = 0; i < scoreboard.length; i++) {
+//			totalScore += scoreboard[i][zeroIndexedPlayerTurn];
+//		}
+//		display.updateScorecard(TOTAL, zeroIndexedPlayerTurn + 1, totalScore);
+//	}
 	
 	/* Go through a turn */
 	private void takeTurn(int zeroIndexedPlayerTurn) {
@@ -237,9 +255,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		
 		category = checkIfUnchosenCategory(category);
 		int score = findScoreForCategory(category);
-		
-		updateScoreboardAndCategoryArray(category, zeroIndexedPlayerTurn, score);
-		display.updateScorecard(category, zeroIndexedPlayerTurn + 1, score);
+		updateScoreboardAndArrays(category, zeroIndexedPlayerTurn, score);
 	}
 	
 	
@@ -266,3 +282,4 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private RandomGenerator rgen = new RandomGenerator();
 
 }
+// TODO: figure out how to keep track of total score to display it at the end of the game. I guess it's just in the scoreboard array actually
