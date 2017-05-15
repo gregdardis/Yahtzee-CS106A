@@ -60,6 +60,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private void rollDiceFirst() {
 		rollDice(true);
 		display.displayDice(dice);
+		display.printMessage("Select the dice to reroll. You must roll the dice three times per turn.");
 	}
 	
 	/* Rolls the dice for the second or third time in a turn*/
@@ -182,33 +183,62 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return score;
 	}
 	
-	/* Go through a turn based on who's turn it is */
-	private void takeTurn(int zeroIndexedPlayerTurn) {
-		/* Waits for the player to click the Roll Dice button to start the first dice roll
-		 * Returns when the Roll Dice button is pressed. */
-		display.waitForPlayerToClickRoll(zeroIndexedPlayerTurn + 1);
-		
+	private void displayPickCategoryMessage() {
+		display.printMessage("Pick a category to apply these dice to.");
+	}
+	
+	private void displayStartTurnMessage() {
+		display.printMessage(playerNames[zeroIndexedPlayerTurn] + "'s turn. Click \"Roll Dice\" to roll the dice.");
+	}
+	
+	private void displayBeforeThirdRollMessage() {
+		display.printMessage("Select the dice to reroll. You must roll the dice one more time.");
+	}
+	
+	/* Has the player roll the dice to obtain a final dice configuration for that turn */
+	private void rollDiceThreeTimes() {
 		rollDiceFirst();
 		rollDiceAgain();
+		displayBeforeThirdRollMessage();
 		rollDiceAgain();
-		
-		/* Returns which category the player selected for their dice */
-		int category = display.waitForPlayerToSelectCategory();
-		
-		/* If the category has already been selected, prompt the player to choose
-		 * another category */
+	}
+	
+	/* If the category has already been selected, prompt the player to choose
+	 * another category */
+	private int checkIfUnchosenCategory(int category) {
 		while (categories[category][zeroIndexedPlayerTurn] == 1) {
 			display.printMessage("That category has already been selected!");
 			category = display.waitForPlayerToSelectCategory();
 		}
-		
-		int score = findScoreForCategory(category);
-		
-		/* Update both the scoreboard, and the nearly identical categories
-		 * array. The categories array will have a 0 in a spot if the category
-		 * hasn't been chosen, and a 1 if it has been chosen before */
+		return category;
+	}
+	
+	/* Update both the scoreboard, and the nearly identical categories
+	 * array. The categories array will have a 0 in a spot if the category
+	 * hasn't been chosen, and a 1 if it has been chosen before */
+	private void updateScoreboardAndCategoryArray(int category, int zeroIndexedPlayerTurn, int score) {
 		scoreboard[category][zeroIndexedPlayerTurn] = score;
 		categories[category][zeroIndexedPlayerTurn] = 1;
+	}
+	
+	/* Go through a turn */
+	private void takeTurn(int zeroIndexedPlayerTurn) {
+		displayStartTurnMessage();
+		
+		/* Waits for the player to click the Roll Dice button to start the first dice roll
+		 * Returns when the Roll Dice button is pressed. */
+		display.waitForPlayerToClickRoll(zeroIndexedPlayerTurn + 1);
+		
+		rollDiceThreeTimes();
+		displayPickCategoryMessage();
+		
+		/* Returns which category the player selected for their dice */
+		int category = display.waitForPlayerToSelectCategory();
+		
+		category = checkIfUnchosenCategory(category);
+		int score = findScoreForCategory(category);
+		
+		updateScoreboardAndCategoryArray(category, zeroIndexedPlayerTurn, score);
 		display.updateScorecard(category, zeroIndexedPlayerTurn + 1, score);
 	}
 	
