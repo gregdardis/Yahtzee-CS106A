@@ -14,6 +14,18 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		new Yahtzee().start(args);
 	}
 	
+	private void initScoreboard() {
+		for (int j = 0; j < nPlayers; j++) {
+			for (int i = 0; i < scoreboard.length; i++) {
+				scoreboard[i][j] = 0;
+			}
+		}
+	}
+	
+	public void init() {
+		initScoreboard();
+	}
+	
 	public void run() {
 		IODialog dialog = getDialog();
 		nPlayers = dialog.readInt("Enter number of players");
@@ -213,31 +225,31 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return category;
 	}
 	
+	/* Totals up the score in a column and displays it in TOTAL */
+	private void calculateAndAddTotalScore() {
+		int totalScore = 0;
+		
+		for (int i = ONES; i <= SIXES; i++) {
+			totalScore += scoreboard[i][zeroIndexedPlayerTurn];
+		}
+		for (int i = UPPER_BONUS; i <= CHANCE; i++) {
+			totalScore += scoreboard[i][zeroIndexedPlayerTurn];
+		}
+		
+		scoreboard[TOTAL][zeroIndexedPlayerTurn] = totalScore;
+		display.updateScorecard(TOTAL, zeroIndexedPlayerTurn + 1, totalScore);
+	}
+	
 	/* Update both the scoreboard, and the nearly identical categories
 	 * array. The categories array will have a 0 in a spot if the category
 	 * hasn't been chosen, and a 1 if it has been chosen before */
 	private void updateScoreboardAndArrays(int category, int zeroIndexedPlayerTurn, int score) {
 		scoreboard[category][zeroIndexedPlayerTurn] = score;
 		categories[category][zeroIndexedPlayerTurn] = 1;
-		
-		int totalScore = 0;
 		display.updateScorecard(category, zeroIndexedPlayerTurn + 1, score);
-		for (int i = 0; i < scoreboard.length - 1; i++) {
-			System.out.println("Scoreboard at i = " + scoreboard[i][zeroIndexedPlayerTurn]);
-			totalScore += scoreboard[i][zeroIndexedPlayerTurn];
-		}
-		scoreboard[TOTAL][zeroIndexedPlayerTurn] = totalScore;
-		display.updateScorecard(TOTAL, zeroIndexedPlayerTurn + 1, totalScore);
+		
+		calculateAndAddTotalScore();
 	}
-	
-//	private void updateScoreboard(int category, int zeroIndexedPlayerTurn, int score) {
-//		int totalScore = 0;
-//		display.updateScorecard(category, zeroIndexedPlayerTurn + 1, score);
-//		for (int i = 0; i < scoreboard.length; i++) {
-//			totalScore += scoreboard[i][zeroIndexedPlayerTurn];
-//		}
-//		display.updateScorecard(TOTAL, zeroIndexedPlayerTurn + 1, totalScore);
-//	}
 	
 	/* Go through a turn */
 	private void takeTurn(int zeroIndexedPlayerTurn) {
@@ -258,17 +270,72 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		updateScoreboardAndArrays(category, zeroIndexedPlayerTurn, score);
 	}
 	
+	/* Calculates the upper score and bonus, updates the scoreboard and puts them in the
+	 * scoreboard array */
+	private void fillInUpperScoreAndBonus() {
+		for (int j = 0; j < nPlayers; j++) {
+			int upperScore = 0;
+			for (int i = ONES; i <= SIXES; i++) {
+				upperScore += scoreboard[i][j];
+			}
+			scoreboard[UPPER_SCORE][j] = upperScore;
+			display.updateScorecard(UPPER_SCORE, j + 1, upperScore);
+			if (upperScore >= 63) {
+				scoreboard[UPPER_BONUS][j] = 35;
+				display.updateScorecard(UPPER_BONUS, j + 1, 35);
+			} else {
+				display.updateScorecard(UPPER_BONUS, j + 1, 0);
+			}
+		}	
+	}
+	
+	private void fillInLowerScore() {
+		for (int j = 0; j < nPlayers; j++) {
+			int lowerScore = 0;
+			for (int i = THREE_OF_A_KIND; i <= CHANCE; i++) {
+				lowerScore += scoreboard[i][j];
+			}
+			scoreboard[LOWER_SCORE][j] = lowerScore;
+			display.updateScorecard(LOWER_SCORE, j + 1, lowerScore);
+		}
+	}
+	
+	
+	private void fillInScoreboard() {
+		fillInUpperScoreAndBonus();
+		fillInLowerScore();
+		calculateAndAddTotalScore();
+	}
+	
+	/* Chooses a winner based on index of their column, and prints who it is and what their score is highest score */
+	private void chooseWinner() {
+		int winner = 0;
+		int highestScore = scoreboard[TOTAL][0];
+		for (int i = 0; i < nPlayers; i++) {
+			if (scoreboard[TOTAL][i] > highestScore) {
+				highestScore = scoreboard[TOTAL][i];
+				winner = i;
+				display.printMessage("The winner is " + playerNames[winner] + " with a score of " + highestScore + ".");
+			}
+			else if (scoreboard[TOTAL][i] == highestScore) {
+				display.printMessage("It's a tie.");
+			}
+		}
+	}
+	
 	
 	private void playGame() {
 		/* Scoreboard keeps track of the score, categories keeps track of if
-		 * a category has been chosen yet */
+		 * a category has been chosen yet. Both are from 1 index to N_CATEGORIES + 1 */
 		scoreboard = new int[N_CATEGORIES + 1][nPlayers];
 		categories = new int[N_CATEGORIES + 1][nPlayers];
 
-		for (int i = 0; i < (nPlayers * 13); i++) {
+		for (int i = 0; i < (nPlayers * N_SCORING_CATEGORIES); i++) {
 			zeroIndexedPlayerTurn = selectPlayerTurn(zeroIndexedPlayerTurn);
 			takeTurn(zeroIndexedPlayerTurn);
 		}
+		fillInScoreboard();
+		chooseWinner();
 	}
 		
 /* Private instance variables */
@@ -282,4 +349,3 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private RandomGenerator rgen = new RandomGenerator();
 
 }
-// TODO: figure out how to keep track of total score to display it at the end of the game. I guess it's just in the scoreboard array actually
