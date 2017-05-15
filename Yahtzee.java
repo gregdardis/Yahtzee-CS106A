@@ -56,24 +56,39 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		
 	}
 	
+	/* Rolls the dice for the first time in a turn */
 	private void rollDiceFirst() {
 		rollDice(true);
 		display.displayDice(dice);
 	}
 	
+	/* Rolls the dice for the second or third time in a turn*/
 	private void rollDiceAgain() {
 		display.waitForPlayerToSelectDice();
 		rollDice(false);
 		display.displayDice(dice);
-		System.out.println("Got to here");
+	}
+	
+	/* Takes an index for a category and checks to see if that category is met.
+	 * Returns a score to be added to the correct place in the scoreboard by a later method*/
+	private int findScoreForCategory(int category) {
+		int score = 0;
+		if (category == ONES) {
+			for (int i = 0; i < N_DICE; i++) {
+				if (dice[i] == 1) {
+					score += dice[i];
+				}
+			}
+			return score;
+		}
+		return score;
+//		if (YahtzeeMagicStub.checkCategory(dice, ONES)) {}
 	}
 	
 	/* Go through a turn based on who's turn it is */
-	private void takeTurn(int zeroIndexedPlayerTurn) {
+	private void takeTurn(int zeroIndexedPlayerTurn, int[][] scoreboard) {
 		/* Waits for the player to click the Roll Dice button to start the first dice roll
-		 * Highlights the player's name in the scorecard, erases any dice displayed from previous rolls,
-		 * draws the roll dice button, and then waits for the player to click the button.
-		 * Returns when the button is pressed. */
+		 * Returns when the Roll Dice button is pressed. */
 		display.waitForPlayerToClickRoll(zeroIndexedPlayerTurn + 1);
 		
 		rollDiceFirst();
@@ -82,19 +97,24 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		
 		/* Returns which category the player selected for their dice */
 		int category = display.waitForPlayerToSelectCategory();
-		
+		int score = findScoreForCategory(category);
+		display.updateScorecard(category, zeroIndexedPlayerTurn + 1, score);
 	}
 	
 	
 	private void playGame() {
+		int[][] scoreboard = new int[N_CATEGORIES][nPlayers];
 		/* zeroIndexedPlayerTurn == -1 because nobody has played yet */
-		zeroIndexedPlayerTurn = selectPlayerTurn(zeroIndexedPlayerTurn);
+//		zeroIndexedPlayerTurn = selectPlayerTurn(zeroIndexedPlayerTurn);
+		for (int i = 0; i < (nPlayers * 13); i++) {
+			zeroIndexedPlayerTurn = selectPlayerTurn(zeroIndexedPlayerTurn);
+			takeTurn(zeroIndexedPlayerTurn, scoreboard);
+		}
 		
-		takeTurn(zeroIndexedPlayerTurn);
 	}
 		
 /* Private instance variables */
-	int[] dice = new int[N_DICE];
+	int[] dice = new int[N_DICE]; 
 	private int zeroIndexedPlayerTurn = -1;
 	private int nPlayers;
 	private String[] playerNames;
