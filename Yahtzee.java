@@ -80,14 +80,106 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return score;
 	}
 	
+	/* Finds the score for categories THREE_OF_A_KIND, and returns it. TODO: find out if it's actually a three of a kind, then return it */
+	private int findScoreThreeOfAKind() {
+		int score = 0;
+		for (int i = 0; i < N_DICE; i++) {
+			score += dice[i];
+		}
+		return score;
+	}
+	
+	/* Finds the score for categories FOUR_OF_A_KIND, and returns it. TODO: find out if it's actually a four of a kind, then return it */
+	private int findScoreFourOfAKind() {
+		int score = 0;
+		for (int i = 0; i < N_DICE; i++) {
+			score += dice[i];
+		}
+		return score;
+	}
+	
+	/* Finds the score for a full house. TODO: find out if it's actually a full house, then return it */
+	private int findScoreFullHouse() {
+		int score = 0;
+		score = 25;
+		return score;
+	}
+	
+	/* Finds the score for a small straight. TODO: find out if it's really a small straight, then return it */
+	private int findScoreSmallStraight() {
+		int score = 0;
+		score = 30;
+		return score;
+	}
+	
+	/* Finds the score for a large straight. TODO: find out if it's really a large straight, then return it */
+	private int findScoreLargeStraight() {
+		int score = 0;
+		score = 40;
+		return score;
+	}
+	
+	/* Finds the score for a yahtzee. TODO: find out if it's actually a yahtzee, then return it */
+	private int findScoreYahtzee() {
+		int score = 0;
+		score = 50;
+		return score;
+	}
+	
+	/* Finds the score for "chance" category, as in sums all the dice values and returns it */
+	private int findScoreChance() {
+		int score = 0;
+		for (int i = 0; i < N_DICE; i++) {
+			score += dice[i];
+		}
+		return score;
+	}
+	
 	/* Takes an index for a category and checks to see if that category is met.
 	 * Returns a score to be added to the correct place in the scoreboard by a later method*/
 	private int findScoreForCategory(int category) {
 		int score = 0;
-		score = findScoreOnesToSixes(category);
 		
+		if (category <= SIXES) {
+			score = findScoreOnesToSixes(category);
+			return score;
+		}
+		
+		if (YahtzeeMagicStub.checkCategory(dice, THREE_OF_A_KIND) && category == THREE_OF_A_KIND) {
+			score = findScoreThreeOfAKind();
+			return score;
+		}
+		
+		if (YahtzeeMagicStub.checkCategory(dice, FOUR_OF_A_KIND) && category == FOUR_OF_A_KIND) {
+			score = findScoreFourOfAKind();
+			return score;
+		}
+		
+		if (YahtzeeMagicStub.checkCategory(dice, FULL_HOUSE) && category == FULL_HOUSE) {
+			score = findScoreFullHouse();
+			return score;
+		}
+		
+		if (YahtzeeMagicStub.checkCategory(dice, YAHTZEE) && category == YAHTZEE) {
+			score = findScoreYahtzee();
+			return score;
+		}
+		
+		if (YahtzeeMagicStub.checkCategory(dice, SMALL_STRAIGHT) && category == SMALL_STRAIGHT) {
+			score = findScoreSmallStraight();
+			return score;
+		}
+		
+		if (YahtzeeMagicStub.checkCategory(dice, LARGE_STRAIGHT) && category == LARGE_STRAIGHT) {
+			score = findScoreLargeStraight();
+			return score;
+		}
+		
+		if (category == CHANCE) {
+			score = findScoreChance();
+			return score;
+		}
 		return score;
-//		if (YahtzeeMagicStub.checkCategory(dice, ONES)) {}
 	}
 	
 	/* Go through a turn based on who's turn it is */
