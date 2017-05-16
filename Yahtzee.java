@@ -42,8 +42,8 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	 * player 0 will always go first. TODO: Will change that so a random player goes first  */
 	private int selectPlayerTurn(int zeroIndexedPlayerTurn) {
 		if (zeroIndexedPlayerTurn == -1) {
-			/* Make this make it a random persons turn. Currently player 0 goes first always */
-			return 0;
+			/* If game is just starting, make it a random players turn */
+			return rgen.nextInt(1, nPlayers);
 		}
 		else {
 			return (zeroIndexedPlayerTurn + 1) % nPlayers;
@@ -225,19 +225,18 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return category;
 	}
 	
-	/* Totals up the score in a column and displays it in TOTAL */
-	private void calculateAndAddTotalScore() {
-		int totalScore = 0;
+	/* Totals up the score in a column and displays it in TOTAL for a certain player */
+	private void calculateAndAddTotalScore(int zeroIndexedPlayerNumber) {
 		
-		for (int i = ONES; i <= SIXES; i++) {
-			totalScore += scoreboard[i][zeroIndexedPlayerTurn];
-		}
-		for (int i = UPPER_BONUS; i <= CHANCE; i++) {
-			totalScore += scoreboard[i][zeroIndexedPlayerTurn];
-		}
-		
-		scoreboard[TOTAL][zeroIndexedPlayerTurn] = totalScore;
-		display.updateScorecard(TOTAL, zeroIndexedPlayerTurn + 1, totalScore);
+			int totalScore = 0;
+			for (int i = ONES; i <= SIXES; i++) {
+				totalScore += scoreboard[i][zeroIndexedPlayerNumber];
+			}
+			for (int i = UPPER_BONUS; i <= CHANCE; i++) {
+				totalScore += scoreboard[i][zeroIndexedPlayerNumber];
+			}
+			scoreboard[TOTAL][zeroIndexedPlayerNumber] = totalScore;
+			display.updateScorecard(TOTAL, zeroIndexedPlayerNumber + 1, totalScore);
 	}
 	
 	/* Update both the scoreboard, and the nearly identical categories
@@ -248,7 +247,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		categories[category][zeroIndexedPlayerTurn] = 1;
 		display.updateScorecard(category, zeroIndexedPlayerTurn + 1, score);
 		
-		calculateAndAddTotalScore();
+		calculateAndAddTotalScore(zeroIndexedPlayerTurn);
 	}
 	
 	/* Go through a turn */
@@ -304,7 +303,10 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private void fillInScoreboard() {
 		fillInUpperScoreAndBonus();
 		fillInLowerScore();
-		calculateAndAddTotalScore();
+		for (int i = 0; i < nPlayers; i++) {
+			calculateAndAddTotalScore(i);
+		}
+		
 	}
 	
 	/* Chooses a winner based on index of their column, and prints who it is and what their score is highest score */
@@ -312,12 +314,11 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		int winner = 0;
 		int highestScore = scoreboard[TOTAL][0];
 		for (int i = 0; i < nPlayers; i++) {
-			if (scoreboard[TOTAL][i] > highestScore) {
+			if (scoreboard[TOTAL][i] >= highestScore) {
 				highestScore = scoreboard[TOTAL][i];
 				winner = i;
 				display.printMessage("The winner is " + playerNames[winner] + " with a score of " + highestScore + ".");
-			}
-			else if (scoreboard[TOTAL][i] == highestScore) {
+			} else if (scoreboard[TOTAL][i] == highestScore) {
 				display.printMessage("It's a tie.");
 			}
 		}
@@ -348,4 +349,4 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private YahtzeeDisplay display;
 	private RandomGenerator rgen = new RandomGenerator();
 
-}
+} // TODO: after calculating the upper bonus need to re-add total score
