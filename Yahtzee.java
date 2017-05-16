@@ -7,6 +7,7 @@
 import acm.io.*;
 import acm.program.*;
 import acm.util.*;
+import java.util.*;
 
 public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	
@@ -309,21 +310,45 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		
 	}
 	
-	/* Chooses a winner based on index of their column, and prints who it is and what their score is highest score */
+	/* First iterate through the scoreboard to find the value of the highest score. 
+	 * Then iterate through the scores again and add every person with that score to an ArrayList (to deal with ties) */
 	private void chooseWinner() {
-		int winner = 0;
-		int highestScore = scoreboard[TOTAL][0];
+		int highestScore = 0;
+		ArrayList<Integer> winners = new ArrayList<Integer>();
 		for (int i = 0; i < nPlayers; i++) {
-			if (scoreboard[TOTAL][i] >= highestScore) {
+			if (scoreboard[TOTAL][i] > highestScore) {
 				highestScore = scoreboard[TOTAL][i];
-				winner = i;
-				display.printMessage("The winner is " + playerNames[winner] + " with a score of " + highestScore + ".");
-			} else if (scoreboard[TOTAL][i] == highestScore) {
-				display.printMessage("It's a tie.");
 			}
 		}
+		
+		for (int i = 0; i < nPlayers; i++) {
+			if (scoreboard[TOTAL][i] == highestScore) {
+				winners.add(i);
+			}
+		}
+		printWinners(winners);
 	}
 	
+	private void printWinners(ArrayList<Integer> winners) {
+		if (winners.size() == 1) {
+			display.printMessage("The winner is: " + playerNames[winners.get(0)]);
+		} else {
+			String listOfNames = joinNames(winners);
+			display.printMessage("The winners are: " + listOfNames + ".");
+		}
+		
+	}
+	
+	private String joinNames(ArrayList<Integer> winners) {
+		String listOfNames = playerNames[winners.get(0)];
+		for (int i = 1; i < winners.size(); i++) {
+			listOfNames = listOfNames + ", " + playerNames[winners.get(i)];
+		}
+		return listOfNames;
+	}
+	
+//	display.printMessage("The winner is " + playerNames[winner] + " with a score of " + highestScore + ".");
+//	display.printMessage("It's a tie.");
 	
 	private void playGame() {
 		/* Scoreboard keeps track of the score, categories keeps track of if
@@ -349,4 +374,4 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private YahtzeeDisplay display;
 	private RandomGenerator rgen = new RandomGenerator();
 
-} // TODO: after calculating the upper bonus need to re-add total score
+}
