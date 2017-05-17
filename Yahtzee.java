@@ -94,17 +94,8 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return score;
 	}
 	
-	/* Finds the score for categories THREE_OF_A_KIND, and returns it. TODO: find out if it's actually a three of a kind, then return it */
-	private int findScoreThreeOfAKind() {
-		int score = 0;
-		for (int i = 0; i < N_DICE; i++) {
-			score += dice[i];
-		}
-		return score;
-	}
-	
-	/* Finds the score for categories FOUR_OF_A_KIND, and returns it. TODO: find out if it's actually a four of a kind, then return it */
-	private int findScoreFourOfAKind() {
+	/* Finds the score if you sum all of the dice, and returns it */
+	private int sumDiceValues() {
 		int score = 0;
 		for (int i = 0; i < N_DICE; i++) {
 			score += dice[i];
@@ -143,23 +134,9 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	/* Finds the score for "chance" category, as in sums all the dice values and returns it */
 	private int findScoreChance() {
 		int score = 0;
-		for (int i = 0; i < N_DICE; i++) {
-			score += dice[i];
-		}
+		score = sumDiceValues();
 		return score;
 	}
-	
-//	/* Returns true if the dice are showing three of a kind, false otherwise */
-//	private boolean isThreeOfAKind() {
-//		int threeOfAKindCounter;
-//		for (int i = 1; i <= 3; i++) {
-//			threeOfAKindCounter = compareWithDieForMatches(i);
-//			if (threeOfAKindCounter >= 2) {
-//				return true;
-//			} 
-//		}
-//	return false;
-//	}
 	
 	/* Returns true if the given number of dice are the same */
 	private boolean howManyDiceMatch(int howManyDice) {
@@ -238,12 +215,12 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 		
 		if (isCategory(THREE_OF_A_KIND) && category == THREE_OF_A_KIND) {
-			score = findScoreThreeOfAKind();
+			score = sumDiceValues();
 			return score;
 		}
 		
 		if (isCategory(FOUR_OF_A_KIND) && category == FOUR_OF_A_KIND) {
-			score = findScoreFourOfAKind();
+			score = sumDiceValues();
 			return score;
 		}
 		
