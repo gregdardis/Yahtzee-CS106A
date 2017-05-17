@@ -103,28 +103,29 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return score;
 	}
 	
-	/* Finds the score for a full house. TODO: find out if it's actually a full house, then return it */
+
+	/* Finds the score for a full house */
 	public int findScoreFullHouse() {
 		int score = 0;
 		score = 25;
 		return score;
 	}
 	
-	/* Finds the score for a small straight. TODO: find out if it's really a small straight, then return it */
+	/* Finds the score for a small straight */
 	private int findScoreSmallStraight() {
 		int score = 0;
 		score = 30;
 		return score;
 	}
 	
-	/* Finds the score for a large straight. TODO: find out if it's really a large straight, then return it */
+	/* Finds the score for a large straight */
 	private int findScoreLargeStraight() {
 		int score = 0;
 		score = 40;
 		return score;
 	}
 	
-	/* Finds the score for a yahtzee. TODO: find out if it's actually a yahtzee, then return it */
+	/* Finds the score for a yahtzee. */
 	private int findScoreYahtzee() {
 		int score = 0;
 		score = 50;
