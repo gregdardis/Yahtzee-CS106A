@@ -95,7 +95,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/* Finds the score if you sum all of the dice, and returns it */
-	private int sumDiceValues() {
+	public int sumDiceValues() {
 		int score = 0;
 		for (int i = 0; i < N_DICE; i++) {
 			score += dice[i];
@@ -104,7 +104,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/* Finds the score for a full house. TODO: find out if it's actually a full house, then return it */
-	private int findScoreFullHouse() {
+	public int findScoreFullHouse() {
 		int score = 0;
 		score = 25;
 		return score;
@@ -139,7 +139,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/* Returns true if the given number of dice are the same */
-	private boolean howManyDiceMatch(int howManyDice) {
+	public boolean howManyDiceMatch(int howManyDice) {
 		for (int i = 0; i < counts.length; i++) {
 			if (counts[i] >= howManyDice) {
 				return true;
@@ -149,7 +149,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/* Returns true if the dice are showing full house, false otherwise */
-	private boolean isFullHouse() {
+	public boolean isFullHouse() {
 		if (howManyDiceMatch(3)) {
 			for (int i = 0; i < counts.length; i++) {
 				if (counts[i] == 2) {
@@ -337,11 +337,27 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		displayPickCategoryMessage();
 		
 		/* Returns which category the player selected for their dice */
-		int category = display.waitForPlayerToSelectCategory();
+		int categoryClicked = display.waitForPlayerToSelectCategory();
 		
-		category = checkIfUnchosenCategory(category);
-		int score = findScoreForCategory(category);
-		updateScoreboardAndArrays(category, zeroIndexedPlayerTurn, score);
+		categoryClicked = checkIfUnchosenCategory(categoryClicked);
+		Category category = findCategory(categoryClicked);
+		int score = category.findScore();
+		
+//		int score = findScoreForCategory(categoryClicked);
+		updateScoreboardAndArrays(categoryClicked, zeroIndexedPlayerTurn, score);
+	}
+	
+	private Category findCategory(int categoryClicked) {
+		switch (categoryClicked) {
+			case THREE_OF_A_KIND:
+				return new ThreeOfAKind(this);
+			case FOUR_OF_A_KIND:
+				return new FourOfAKind(this);
+			case FULL_HOUSE:
+				return new FullHouse(this);
+			default:
+				return new ThreeOfAKind(this);
+		}
 	}
 	
 	/* Calculates the upper score and bonus, updates the scoreboard and puts them in the
@@ -440,6 +456,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	int[][] categories;
 	int[] dice = new int[N_DICE]; 
 	int[] counts = new int[6];
+	
 	private int zeroIndexedPlayerTurn = -1;
 	private int nPlayers;
 	private String[] playerNames;
