@@ -84,7 +84,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/* Finds the score for categories ONES to SIXES, and returns it */
-	private int findScoreOnesToSixes(int category) {
+	public int findScoreOnesToSixes(int category) {
 		int score = 0;
 		for (int i = 0; i < N_DICE; i++) {
 			if (dice[i] == category) {
@@ -126,7 +126,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/* Finds the score for a yahtzee. */
-	private int findScoreYahtzee() {
+	public int findScoreYahtzee() {
 		int score = 0;
 		score = 50;
 		return score;
@@ -334,6 +334,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		display.waitForPlayerToClickRoll(zeroIndexedPlayerTurn + 1);
 		
 		rollDiceThreeTimes();
+	
 		recalculateCountsArray();
 		displayPickCategoryMessage();
 		
@@ -356,6 +357,15 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 				return new FourOfAKind(this);
 			case FULL_HOUSE:
 				return new FullHouse(this);
+			case YAHTZEE:
+				return new YahtzeeCategory(this);
+			case ONES:
+			case TWOS:
+			case THREES:
+			case FOURS:
+			case FIVES:
+			case SIXES:
+				return new OnesToSixes(this, categoryClicked);
 			default:
 				return new ThreeOfAKind(this);
 		}
