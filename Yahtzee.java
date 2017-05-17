@@ -183,34 +183,14 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return false;
 	}
 	
-	/* Returns true if the dice are showing a small straight, false otherwise */
+	/* Returns true if the dice are showing a straight of length straightLength, false otherwise */
 	private boolean isStraightLength(int straightLength) {
-		int inARow = 0;
-		int startOfStraight = 0;
-	
-		for (int i = startOfStraight; i < straightLength + startOfStraight; i++) {
-			if (counts[i] >= 1) {
-				inARow++;
-			}
-		}
-		if (inARow >= straightLength) {
-			return true;
-		}
+		int inARow;
+		int startOfStraight;
 		
-		inARow = 0;
-		startOfStraight = 1;
-		for (int i = startOfStraight; i < straightLength + startOfStraight; i++) {
-			if (counts[i] >= 1) {
-				inARow++;
-			}
-		}
-		if (inARow >= straightLength) {
-			return true;
-		}
-		
-		if (straightLength == 4) {
+		for (int j = 0; j + straightLength <= counts.length; j++) {
+			startOfStraight = j;
 			inARow = 0;
-			startOfStraight = 2;
 			for (int i = startOfStraight; i < straightLength + startOfStraight; i++) {
 				if (counts[i] >= 1) {
 					inARow++;
@@ -220,7 +200,6 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 				return true;
 			}
 		}
-		
 		return false;
 	}
 	
@@ -283,7 +262,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			return score;
 		}
 		
-		if (YahtzeeMagicStub.checkCategory(dice, LARGE_STRAIGHT) && category == LARGE_STRAIGHT) {
+		if (isCategory(LARGE_STRAIGHT) && category == LARGE_STRAIGHT) {
 			score = findScoreLargeStraight();
 			return score;
 		}
