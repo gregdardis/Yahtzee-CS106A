@@ -112,14 +112,14 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/* Finds the score for a small straight */
-	private int findScoreSmallStraight() {
+	public int findScoreSmallStraight() {
 		int score = 0;
 		score = 30;
 		return score;
 	}
 	
 	/* Finds the score for a large straight */
-	private int findScoreLargeStraight() {
+	public int findScoreLargeStraight() {
 		int score = 0;
 		score = 40;
 		return score;
@@ -133,7 +133,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/* Finds the score for "chance" category, as in sums all the dice values and returns it */
-	private int findScoreChance() {
+	public int findScoreChance() {
 		int score = 0;
 		score = sumDiceValues();
 		return score;
@@ -162,7 +162,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/* Returns true if the dice are showing a straight of length straightLength, false otherwise */
-	private boolean isStraightLength(int straightLength) {
+	public boolean isStraightLength(int straightLength) {
 		int inARow;
 		int startOfStraight;
 		
@@ -181,76 +181,76 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return false;
 	}
 	
-	/* Checks to see if the category has actually been met. Returns true if 
-	 * it has been, false otherwise */
-	private boolean isCategory(int category) {
-		if (category == THREE_OF_A_KIND) {
-			return howManyDiceMatch(3);
-		}
-		if (category == FOUR_OF_A_KIND) {
-			return howManyDiceMatch(4);
-		}
-		if (category == FULL_HOUSE) {
-			return isFullHouse();
-		}
-		if (category == YAHTZEE) {
-			return howManyDiceMatch(5);
-		}
-		if (category == SMALL_STRAIGHT) {
-			return isStraightLength(4);
-		}
-		if (category == LARGE_STRAIGHT) {
-			return isStraightLength(5);
-		}
-		return false;
-	}
+//	/* Checks to see if the category has actually been met. Returns true if 
+//	 * it has been, false otherwise */
+//	private boolean isCategory(int category) {
+//		if (category == THREE_OF_A_KIND) {
+//			return howManyDiceMatch(3);
+//		}
+//		if (category == FOUR_OF_A_KIND) {
+//			return howManyDiceMatch(4);
+//		}
+//		if (category == FULL_HOUSE) {
+//			return isFullHouse();
+//		}
+//		if (category == YAHTZEE) {
+//			return howManyDiceMatch(5);
+//		}
+//		if (category == SMALL_STRAIGHT) {
+//			return isStraightLength(4);
+//		}
+//		if (category == LARGE_STRAIGHT) {
+//			return isStraightLength(5);
+//		}
+//		return false;
+//	}
 	
-	/* Takes an index for a category and checks to see if that category is met.
-	 * Returns a score to be added to the correct place in the scoreboard by a later method*/
-	private int findScoreForCategory(int category) {
-		int score = 0;
-		
-		if (category <= SIXES) {
-			score = findScoreOnesToSixes(category);
-			return score;
-		}
-		
-		if (isCategory(THREE_OF_A_KIND) && category == THREE_OF_A_KIND) {
-			score = sumDiceValues();
-			return score;
-		}
-		
-		if (isCategory(FOUR_OF_A_KIND) && category == FOUR_OF_A_KIND) {
-			score = sumDiceValues();
-			return score;
-		}
-		
-		if (isCategory(FULL_HOUSE) && category == FULL_HOUSE) {
-			score = findScoreFullHouse();
-			return score;
-		}
-		
-		if (isCategory(YAHTZEE) && category == YAHTZEE) {
-			score = findScoreYahtzee();
-			return score;
-		}
-		
-		if (isCategory(SMALL_STRAIGHT) && category == SMALL_STRAIGHT) {
-			score = findScoreSmallStraight();
-			return score;
-		}
-		
-		if (isCategory(LARGE_STRAIGHT) && category == LARGE_STRAIGHT) {
-			score = findScoreLargeStraight();
-			return score;
-		}
-		
-		if (category == CHANCE) {
-			score = findScoreChance();
-			return score;
-		}
-		return score;
-	}
+//	/* Takes an index for a category and checks to see if that category is met.
+//	 * Returns a score to be added to the correct place in the scoreboard by a later method*/
+//	private int findScoreForCategory(int category) {
+//		int score = 0;
+//		
+//		if (category <= SIXES) {
+//			score = findScoreOnesToSixes(category);
+//			return score;
+//		}
+//		
+//		if (isCategory(THREE_OF_A_KIND) && category == THREE_OF_A_KIND) {
+//			score = sumDiceValues();
+//			return score;
+//		}
+//		
+//		if (isCategory(FOUR_OF_A_KIND) && category == FOUR_OF_A_KIND) {
+//			score = sumDiceValues();
+//			return score;
+//		}
+//		
+//		if (isCategory(FULL_HOUSE) && category == FULL_HOUSE) {
+//			score = findScoreFullHouse();
+//			return score;
+//		}
+//		
+//		if (isCategory(YAHTZEE) && category == YAHTZEE) {
+//			score = findScoreYahtzee();
+//			return score;
+//		}
+//		
+//		if (isCategory(SMALL_STRAIGHT) && category == SMALL_STRAIGHT) {
+//			score = findScoreSmallStraight();
+//			return score;
+//		}
+//		
+//		if (isCategory(LARGE_STRAIGHT) && category == LARGE_STRAIGHT) {
+//			score = findScoreLargeStraight();
+//			return score;
+//		}
+//		
+//		if (category == CHANCE) {
+//			score = findScoreChance();
+//			return score;
+//		}
+//		return score;
+//	}
 	
 	private void displayPickCategoryMessage() {
 		display.printMessage("Pick a category to apply these dice to.");
@@ -366,6 +366,12 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			case FIVES:
 			case SIXES:
 				return new OnesToSixes(this, categoryClicked);
+			case CHANCE:
+				return new Chance(this);
+			case SMALL_STRAIGHT:
+				return new SmallStraight(this);
+			case LARGE_STRAIGHT:
+				return new LargeStraight(this);
 			default:
 				return new ThreeOfAKind(this);
 		}
