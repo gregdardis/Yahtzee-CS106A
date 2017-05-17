@@ -44,7 +44,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private int selectPlayerTurn(int zeroIndexedPlayerTurn) {
 		if (zeroIndexedPlayerTurn == -1) {
 			/* If game is just starting, make it a random players turn */
-			return rgen.nextInt(1, nPlayers);
+			return rgen.nextInt(0, nPlayers - 1);
 		}
 		else {
 			return (zeroIndexedPlayerTurn + 1) % nPlayers;
@@ -149,6 +149,76 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return score;
 	}
 	
+	private int compareWithDieForMatches(int diceNumber) {
+		int counter = 0;
+		
+		for (int i = diceNumber; i < dice.length; i++) {
+			if (dice[diceNumber - 1] == dice[i]) {
+				counter++;
+			}
+		}
+		
+		return counter;
+	}
+	
+	/* Returns true if the dice are showing three of a kind, false otherwise */
+	private boolean isThreeOfAKind() {
+		int threeOfAKindCounter = compareWithDieForMatches(1);
+		if (threeOfAKindCounter >= 2) {
+			return true;
+		} 
+		threeOfAKindCounter = compareWithDieForMatches(2);
+		if (threeOfAKindCounter >= 2) {
+			return true;
+		}
+		threeOfAKindCounter = compareWithDieForMatches(3);
+		if (threeOfAKindCounter >= 2) {
+			return true;
+		}
+	return false;
+	}
+	
+	/* Returns true if the dice are showing four of a kind, false otherwise */
+	private boolean isFourOfAKind() {
+		int fourOfAKindCounter = compareWithDieForMatches(1);
+		if (fourOfAKindCounter >= 3) {
+			return true;
+		} 
+		fourOfAKindCounter = compareWithDieForMatches(2);
+		if (fourOfAKindCounter >= 3) {
+			return true;
+		}
+		
+	return false;
+	}
+	
+	/* Returns true if the dice are showing full house, false otherwise */
+	private boolean isFullHouse() {
+		if (isThreeOfAKind()) {
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/* Checks to see if the category has actually been met. Returns true if 
+	 * it has been, false otherwise */
+	private boolean isCategory(int category) {
+		if (category == THREE_OF_A_KIND) {
+			return isThreeOfAKind();
+		}
+		if (category == FOUR_OF_A_KIND) {
+			return isFourOfAKind();
+		}
+		if (category == FULL_HOUSE) {
+			return isFullHouse();
+		}
+		
+		return false;
+		
+	}
+	
 	/* Takes an index for a category and checks to see if that category is met.
 	 * Returns a score to be added to the correct place in the scoreboard by a later method*/
 	private int findScoreForCategory(int category) {
@@ -159,12 +229,12 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			return score;
 		}
 		
-		if (YahtzeeMagicStub.checkCategory(dice, THREE_OF_A_KIND) && category == THREE_OF_A_KIND) {
+		if (isCategory(THREE_OF_A_KIND) && category == THREE_OF_A_KIND) {
 			score = findScoreThreeOfAKind();
 			return score;
 		}
 		
-		if (YahtzeeMagicStub.checkCategory(dice, FOUR_OF_A_KIND) && category == FOUR_OF_A_KIND) {
+		if (isCategory(FOUR_OF_A_KIND) && category == FOUR_OF_A_KIND) {
 			score = findScoreFourOfAKind();
 			return score;
 		}
@@ -346,9 +416,6 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 		return listOfNames;
 	}
-	
-//	display.printMessage("The winner is " + playerNames[winner] + " with a score of " + highestScore + ".");
-//	display.printMessage("It's a tie.");
 	
 	private void playGame() {
 		/* Scoreboard keeps track of the score, categories keeps track of if
