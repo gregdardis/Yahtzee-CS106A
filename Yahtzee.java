@@ -149,56 +149,37 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return score;
 	}
 	
-	private int compareWithDieForMatches(int diceNumber) {
-		int counter = 0;
-		
-		for (int i = diceNumber; i < dice.length; i++) {
-			if (dice[diceNumber - 1] == dice[i]) {
-				counter++;
+//	/* Returns true if the dice are showing three of a kind, false otherwise */
+//	private boolean isThreeOfAKind() {
+//		int threeOfAKindCounter;
+//		for (int i = 1; i <= 3; i++) {
+//			threeOfAKindCounter = compareWithDieForMatches(i);
+//			if (threeOfAKindCounter >= 2) {
+//				return true;
+//			} 
+//		}
+//	return false;
+//	}
+	
+	/* Returns true if the given number of dice are the same */
+	private boolean howManyDiceMatch(int howManyDice) {
+		for (int i = 0; i < counts.length; i++) {
+			if (counts[i] >= howManyDice) {
+				return true;
 			}
 		}
-		
-		return counter;
-	}
-	
-	/* Returns true if the dice are showing three of a kind, false otherwise */
-	private boolean isThreeOfAKind() {
-		int threeOfAKindCounter = compareWithDieForMatches(1);
-		if (threeOfAKindCounter >= 2) {
-			return true;
-		} 
-		threeOfAKindCounter = compareWithDieForMatches(2);
-		if (threeOfAKindCounter >= 2) {
-			return true;
-		}
-		threeOfAKindCounter = compareWithDieForMatches(3);
-		if (threeOfAKindCounter >= 2) {
-			return true;
-		}
-	return false;
-	}
-	
-	/* Returns true if the dice are showing four of a kind, false otherwise */
-	private boolean isFourOfAKind() {
-		int fourOfAKindCounter = compareWithDieForMatches(1);
-		if (fourOfAKindCounter >= 3) {
-			return true;
-		} 
-		fourOfAKindCounter = compareWithDieForMatches(2);
-		if (fourOfAKindCounter >= 3) {
-			return true;
-		}
-		
-	return false;
+		return false;
 	}
 	
 	/* Returns true if the dice are showing full house, false otherwise */
 	private boolean isFullHouse() {
-		if (isThreeOfAKind()) {
-			
-			return true;
+		if (howManyDiceMatch(3)) {
+			for (int i = 0; i < counts.length; i++) {
+				if (counts[i] == 2) {
+					return true;
+				}
+			}
 		}
-		
 		return false;
 	}
 	
@@ -206,17 +187,18 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	 * it has been, false otherwise */
 	private boolean isCategory(int category) {
 		if (category == THREE_OF_A_KIND) {
-			return isThreeOfAKind();
+			return howManyDiceMatch(3);
 		}
 		if (category == FOUR_OF_A_KIND) {
-			return isFourOfAKind();
+			return howManyDiceMatch(4);
 		}
 		if (category == FULL_HOUSE) {
 			return isFullHouse();
 		}
-		
+		if (category == YAHTZEE) {
+			return howManyDiceMatch(5);
+		}
 		return false;
-		
 	}
 	
 	/* Takes an index for a category and checks to see if that category is met.
@@ -239,12 +221,12 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			return score;
 		}
 		
-		if (YahtzeeMagicStub.checkCategory(dice, FULL_HOUSE) && category == FULL_HOUSE) {
+		if (isCategory(FULL_HOUSE) && category == FULL_HOUSE) {
 			score = findScoreFullHouse();
 			return score;
 		}
 		
-		if (YahtzeeMagicStub.checkCategory(dice, YAHTZEE) && category == YAHTZEE) {
+		if (isCategory(YAHTZEE) && category == YAHTZEE) {
 			score = findScoreYahtzee();
 			return score;
 		}
@@ -321,6 +303,24 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		calculateAndAddTotalScore(zeroIndexedPlayerTurn);
 	}
 	
+	private void clearCountsArray() {
+		for (int i = 0; i < counts.length; i++) {
+			counts[i] = 0;
+		} 
+	}
+	
+	private void addDiceToCountsArray() {
+		for (int i = 0; i < dice.length; i++) {
+			counts[dice[i] - 1]++;
+		}
+	}
+	
+	/* Updates the array counting how many of each number there are */
+	private void recalculateCountsArray() {
+		clearCountsArray();
+		addDiceToCountsArray();
+	}
+	
 	/* Go through a turn */
 	private void takeTurn(int zeroIndexedPlayerTurn) {
 		displayStartTurnMessage();
@@ -330,6 +330,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		display.waitForPlayerToClickRoll(zeroIndexedPlayerTurn + 1);
 		
 		rollDiceThreeTimes();
+		recalculateCountsArray();
 		displayPickCategoryMessage();
 		
 		/* Returns which category the player selected for their dice */
@@ -435,6 +436,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	int[][] scoreboard;
 	int[][] categories;
 	int[] dice = new int[N_DICE]; 
+	int[] counts = new int[6];
 	private int zeroIndexedPlayerTurn = -1;
 	private int nPlayers;
 	private String[] playerNames;
