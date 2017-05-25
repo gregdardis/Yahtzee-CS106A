@@ -13,6 +13,5 @@ public class SmallStraight implements Category {
 		}
 		return yahtzee.findScoreSmallStraight();
 	}
-
-
+	
 }

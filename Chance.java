@@ -8,7 +8,7 @@ public class Chance implements Category {
 	}
 	
 	public int findScore() {
-		return yahtzee.sumDiceValues();
+		return yahtzee.findScoreChance();
 	}
 
 }
